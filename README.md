@@ -1,5 +1,3 @@
-# django-shop
-Онлайн-магазин на Django
 # Django Shop 
 
 Онлайн-магазин на Django для изучения GitFlow и командной разработки.

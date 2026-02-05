@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse_lazy
 
 
 class Category(models.Model):
@@ -34,6 +35,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+    def get_absolute_url(self):
+        return reverse_lazy("catalog:category_list")
 
 
 class Product(models.Model):

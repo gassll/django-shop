@@ -1,23 +1,33 @@
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
+
 from catalog.models import Category
 from .forms import CategoryForm
 from .models import Product
 
 
-class CategoryList(ListView):
+class CategoryListView(ListView):
     model = Category
-    template_name = 'catalog/categories_list.html'
 
 
-# def get_categories(request):
-#     context = {
-#         'categories': Category.objects.all(),
-#     }
-#
-#     return render(request, 'catalog/categories_list.html', context)
+class CategoryCreateView(CreateView):
+    model = Category
+    form_class = CategoryForm
+
+
+class CategoryDeleteView(DeleteView):
+    model = Category
+    success_url = reverse_lazy("catalog:category_list")
+
+
+class CategoryUpdateView(UpdateView):
+    model = Category
+    form_class = CategoryForm
+
+class CategoryDetailView(DetailView):
+    model = Category
+
 
 class ProductListView(ListView):
     model = Product
@@ -29,27 +39,6 @@ class ProductListView(ListView):
 class ProductDetailView(DetailView):
     model = Product
 
-
-
-# def get_product(request):
-#     context = {
-#         'products': Product.objects.all(),
-#     }
-#
-#     return render(request, 'catalog/product_list.html', context)
-
-
-# def product_delete(request, pk):
-#     product = get_object_or_404(Product, pk=pk)
-#
-#     if request.method == 'POST':
-#         product.delete()
-#         messages.success(request, 'Товар успешно удален.')
-#         return redirect('catalog:get_product')
-#
-#     return render(request, 'catalog/confirm_delete_product.html', {
-#         'product': product
-#     })
 
 class ProductUpdateView(UpdateView):
     model = Product
@@ -72,15 +61,3 @@ class ProductCreateView(CreateView):
         response = super().form_valid(form)
         messages.success(self.request, "Категория успешно добавлена!")
         return response
-
-# def create_category(request):
-#     form = CategoryForm()
-
-#     if request.method == "POST":
-#         form = CategoryForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, "Категория успешно добавлена!")
-#             return redirect('catalog:get_categories')
-#
-#     return render(request, 'catalog/category_form.html', {'form': form})

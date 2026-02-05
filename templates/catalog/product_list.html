@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Список товаров{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'catalog:product_form' %}" class="btn btn-primary">Добавить <i
+                        class="bi bi-plus-lg"></i></a>
+
+            </div>
+        </div>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Название</th>
+                <th scope="col">Описание</th>
+                <th scope="col">Цена</th>
+                <th scope="col" class="col-2">Действие</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in object_list %}
+                <tr>
+                    <td>{{ product.pk }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.description }}</td>
+                    <td>
+                        <a href="{% url "catalog:category_update" product.pk %}" class="btn btn-primary"><i
+                                class="bi bi-pencil"></i></a>
+                        <a href="{% url "catalog:category_delete" product.pk %}" class="btn btn-danger"><i
+                                class="bi bi-trash"></i></a>
+                        <a href="{% url "catalog:category_detail" product.pk %}" class="btn btn-warning"><i
+                                class="bi bi-eye"></i></a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

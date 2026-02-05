@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Список категорий{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'catalog:category_form' %}" class="btn btn-primary">Добавить</a>
+
+            </div>
+        </div>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Название</th>
+                <th scope="col">Описание</th>
+                <th scope="col">Действие</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for category in categories %}
+                <tr>
+                    <td>{{ category.pk }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>{{ category.description }}</td>
+                    <td>
+                        <a href="#" class="btn btn-primary">Изменить</a>
+                        <a href="#" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

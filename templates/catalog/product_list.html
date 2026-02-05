@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Список товаров{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Название</th>
+                <th scope="col">Описание</th>
+                <th scope="col">Цена</th>
+                <th scope="col">Действие</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.pk }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.description }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>
+                        <a href="#" class="btn btn-primary">Изменить</a>
+                        <form method="post" action="{% url 'catalog:product_delete' product.pk %}"
+                              style="display: inline;"
+                              onsubmit="return confirm('Удалить товар {{ product.name }}?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p><strong>Кол-во товаров: {{ products.count }}</strong></p>
+    </div>
+{% endblock %}

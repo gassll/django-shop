@@ -30,6 +30,7 @@ class ProductDetailView(DetailView):
     model = Product
 
 
+
 # def get_product(request):
 #     context = {
 #         'products': Product.objects.all(),

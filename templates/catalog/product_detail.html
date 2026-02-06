@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Товар | {{ product.name }}
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row g-4 align-items-start">
+            <!-- Изображение товара -->
+            <div class="col-lg-6">
+                <div class="position-sticky" style="top: 2rem;">
+                    <img src="
+
+
+                            {% if product.image %}{{ product.image.url }}{% else %}{% static 'img/blank.jpg' %}{% endif %}"
+                         class="img-fluid rounded-4 shadow-lg w-100"
+                         alt="{{ product.name }}"
+                         style="height: 500px; object-fit: cover;">
+                </div>
+            </div>
+
+            <!-- Информация о товаре -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-body p-5">
+                        <h1 class="fw-bold mb-4 fs-2 text-dark">{{ product.name }}</h1>
+
+                        <!-- Цена -->
+                        <div class="mb-5">
+                            <div class="d-flex align-items-baseline mb-3">
+                                <h2 class="fw-bold fs-1 text-success mb-0 me-3">{{ product.price|floatformat:0 }} ₽</h2>
+                                <span class="badge bg-success fs-6 px-3 py-2">В наличии</span>
+                            </div>
+                            <small class="text-muted">
+                                Артикул: {{ product.id }}
+                            </small>
+                        </div>
+
+                        <!-- Описание -->
+                        <div class="mb-5">
+                            <h4 class="fw-bold mb-3 text-dark">Описание</h4>
+                            <p class="lead lh-lg text-muted">{{ product.description|linebreaks|truncatewords:100 }}</p>
+                        </div>
+
+                        <!-- Дата создания -->
+                        <div class="mb-5">
+                            <small class="text-muted">
+                                <i class="bi bi-calendar-check me-1"></i>
+                                Добавлен: {{ product.created_at|date:"d.m.Y" }}
+                            </small>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-flex gap-3 flex-wrap mb-4">
+                            <a href="#" class="btn btn-primary btn-lg px-5 py-3 fs-6">
+                                <i class="bi bi-cart-plus-fill me-2"></i>
+                                В корзину
+                            </a>
+                            <a href="#" class="btn btn-outline-primary btn-lg px-4 py-3 fs-6 border-2">
+                                <i class="bi bi-heart me-2"></i>
+                                В избранное
+                            </a>
+                        </div>
+
+                        <!-- Дополнительная информация -->
+                        <div class="mt-5 pt-4 border-top">
+                            <div class="row text-center text-sm-start">
+                                <div class="col-sm-4 mb-3">
+                                    <i class="bi bi-truck display-6 text-primary mb-2 d-block"></i>
+                                    <h6 class="fw-bold text-dark">Быстрая доставка</h6>
+                                    <small class="text-muted">По всей России</small>
+                                </div>
+                                <div class="col-sm-4 mb-3">
+                                    <i class="bi bi-shield-check display-6 text-success mb-2 d-block"></i>
+                                    <h6 class="fw-bold text-dark">Гарантия качества</h6>
+                                    <small class="text-muted">Проверено</small>
+                                </div>
+                                <div class="col-sm-4 mb-3">
+                                    <i class="bi bi-arrow-return-right display-6 text-warning mb-2 d-block"></i>
+                                    <h6 class="fw-bold text-dark">Легкий возврат</h6>
+                                    <small class="text-muted">14 дней</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопка назад -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <a href="{% url 'catalog:products_list' %}"
+                   class="btn btn-outline-secondary btn-lg px-5 py-3">
+                    <i class="bi bi-arrow-left me-3"></i>
+                    Назад к каталогу
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .card {
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn {
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+{% endblock %}

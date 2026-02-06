@@ -36,15 +36,16 @@ class ProductListView(ListView):
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
+    success_url = reverse_lazy("catalog:products_list")
 
 
 class ProductDeleteView(DeleteView):
     model = Product
-    success_url = reverse_lazy("catalog:category_list")
+    success_url = reverse_lazy("catalog:products_list")
 
 
 class ProductUpdateView(UpdateView):
-    model = Category
+    model = Product
     form_class = ProductForm
 
 

@@ -18,11 +18,11 @@ class CategoryForm(forms.ModelForm):
 
 class ProductForm(forms.ModelForm):
     category = forms.ModelChoiceField(queryset=Category.objects.all(),
-                                      widget=forms.Select(attrs={"class": "form-select"}))
+                                      widget=forms.Select(attrs={"class": "form-select"}), label="Категория")
 
     class Meta:
         model = Product
-        fields = ["category", "name", "description", "price", "is_active"]
+        fields = ["category", "name", "description", "price", "is_active", "slug"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Введите название"}),
 

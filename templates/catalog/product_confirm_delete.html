@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block title %}Удалить товар{% endblock %}
+
+{% block content %}
+    <div class="container py-5 min-vh-100 d-flex align-items-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+                <!-- Header с предупреждением -->
+                <div class="text-center mb-5">
+                    <div class="alert-danger-icon position-relative mb-4 mx-auto p-5 rounded-4 shadow-lg">
+                        <div class="bg-danger bg-gradient rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center danger-icon">
+                            <i class="bi bi-exclamation-triangle-fill display-3 text-white"></i>
+                        </div>
+                        <h1 class="display-4 fw-bold text-danger mb-3">Удалить товар?</h1>
+                        <p class="lead text-muted mb-0 fs-5">
+                            <strong class="text-dark">"{{ product.name }}"</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Карточка с информацией -->
+                <div class="card border-0 shadow-xl mb-5">
+                    <div class="card-body p-5">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary bg-gradient rounded-circle me-3 p-3">
+                                        <i class="bi bi-tag-fill text-white fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold text-dark mb-1">Название</h5>
+                                        <p class="mb-0 text-muted">{{ product.name }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-success bg-gradient rounded-circle me-3 p-3">
+                                        <i class="bi bi-currency-ruble text-white fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold text-dark mb-1">Цена</h5>
+                                        <p class="mb-0 text-success fw-bold fs-5">{{ product.price|floatformat:0 }}
+                                            ₽</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-warning bg-gradient rounded-circle me-3 p-3 mt-1">
+                                        <i class="bi bi-file-earmark-text text-white fs-4"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="fw-bold text-dark mb-2">Описание</h5>
+                                        <p class="text-muted mb-0 lh-lg">{{ product.description|truncatewords:20 }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-secondary bg-gradient rounded-circle me-3 p-3">
+                                        <i class="bi bi-hash text-white fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold text-dark mb-1">ID</h5>
+                                        <p class="mb-0 fw-mono text-primary">#{{ product.pk }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-info bg-gradient rounded-circle me-3 p-3">
+                                        <i class="bi bi-calendar-check text-white fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold text-dark mb-1">Создан</h5>
+                                        <p class="mb-0 text-muted">{{ product.created_at|date:"d.m.Y H:i" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопки действий -->
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-5 text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <form method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-danger btn-lg w-100 px-5 py-4 fs-5 fw-bold shadow-lg mb-3 mb-md-0"
+                                            onclick="return confirmAction()">
+                                        <i class="bi bi-trash-fill me-3"></i>
+                                        <span class="d-none d-md-inline">Да, удалить навсегда</span>
+                                        <span class="d-md-none">Удалить</span>
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'catalog:products_list' %}"
+                                   class="btn btn-outline-secondary btn-lg w-100 px-5 py-4 fs-5 fw-bold shadow-lg">
+                                    <i class="bi bi-x-circle me-3"></i>
+                                    Отмена
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Это действие <strong>нельзя отменить</strong>. Товар будет удален навсегда.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .alert-danger-icon {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 1px solid rgba(220, 53, 69, 0.1);
+            max-width: 600px;
+        }
+
+        .danger-icon {
+            width: 120px;
+            height: 120px;
+        }
+
+        .fw-mono {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 1.2rem;
+        }
+
+        .card {
+            border-radius: 25px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333 0%, #b21f2d 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-outline-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
+        }
+
+        .shadow-xl {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .shadow-lg {
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1) !important;
+        }
+    </style>
+
+    <script>
+        function confirmAction() {
+            // Двойное подтверждение для важности
+            const name = "{{ product.name|escapejs }}";
+            return confirm(`⚠️ ВЫ УВЕРЕНЫ?\n\nБудет удален товар:\n"${name}"\n\nЭто действие нельзя отменить!`) &&
+                confirm('🔴 ПОДТВЕРЖДАЕТЕ удаление?');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Анимация появления
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+
+            // Пульсация иконки предупреждения
+            const dangerIcon = document.querySelector('.danger-icon');
+            setInterval(() => {
+                dangerIcon.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    dangerIcon.style.transform = 'scale(1)';
+                }, 500);
+            }, 2000);
+        });
+    </script>
+{% endblock %}

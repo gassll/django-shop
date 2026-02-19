@@ -28,6 +28,13 @@ class Category(models.Model):
         verbose_name='Дата создания'
     )
 
+    order = models.PositiveIntegerField(
+        default=1,
+        db_index=True,
+        blank=True,
+        verbose_name='Порядок сортировки'
+    )
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'

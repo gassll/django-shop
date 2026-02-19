@@ -1,0 +1,25 @@
+<!-- Кнопка добавления в корзину -->
+<form method="post" action="{% url 'cart:add' product.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.GET.next|default:'/' }}">
+    <button type="submit" class="btn btn-primary">В корзину</button>
+</form>
+
+<!-- AJAX обновление количества -->
+<script>
+function updateCart(productId, quantity) {
+    fetch(`/cart/update/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.querySelector('#cart-count').textContent = data.total_items;
+        document.querySelector('#cart-total').textContent = data.total_price;
+    });
+}
+</script>

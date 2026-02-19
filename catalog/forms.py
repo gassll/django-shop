@@ -10,6 +10,7 @@ class CategoryForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Введите название"}),
             "slug": forms.TextInput(attrs={"class": "form-control", "placeholder": "Введите ID"}),
+            "order": forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
             "description": forms.Textarea(
                 attrs={"class": "form-control", "rows": 3, "placeholder": "Введите описание"}),
             "is_active": forms.CheckboxInput(attrs={"class": "form-check-input"}),

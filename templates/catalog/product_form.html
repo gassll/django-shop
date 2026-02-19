@@ -9,28 +9,279 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <h2>{% if object.pk %}
-            Редактирование товара
-        {% else %}
-            Добавление товара
-        {% endif %}</h2>
-
-        <form method="post">
-            {% csrf_token %}
-
-            {% for field in form %}
-                <div class="mb-3">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="text-danger">{{ field.errors }}</div>
-                    {% endif %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Заголовок -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="flex-shrink-0">
+                    <div class="bg-primary rounded-circle p-3 text-white">
+                        <i class="bi bi-{% if object.pk %}pencil-square{% else %}plus-circle{% endif %} fs-3"></i>
+                    </div>
                 </div>
-            {% endfor %}
+                <div class="flex-grow-1 ms-4">
+                    <h2 class="mb-1">
+                        {% if object.pk %}
+                            Редактирование товара
+                        {% else %}
+                            Добавление товара
+                        {% endif %}
+                    </h2>
+                    <p class="text-muted mb-0">
+                        {% if object.pk %}
+                            Внесите необходимые изменения в информацию о товаре
+                        {% else %}
+                            Заполните форму для добавления нового товара в каталог
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
 
-            <button type="submit" class="btn btn-primary">Добавить</button>
-            <a href="{% url 'catalog:products_list' %}" class="btn btn-secondary">Отмена</a>
-        </form>
+            <!-- Карточка с формой -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            {% for field in form %}
+                            <div class="col-12 mb-4">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                                    {{ field.label }}
+                                    {% if field.field.required %}
+                                        <span class="text-danger">*</span>
+                                    {% endif %}
+                                </label>
+
+                                <!-- СПЕЦИАЛЬНАЯ ОБРАБОТКА ДЛЯ КАТЕГОРИЙ -->
+                                {% if field.name == 'category' %}
+                                    <div class="select-wrapper position-relative">
+                                        <select name="{{ field.name }}"
+                                                id="{{ field.id_for_label }}"
+                                                class="form-select form-select-lg category-select"
+                                                {% if field.field.required %}required{% endif %}>
+                                            <option value="">📁 Выберите категорию...</option>
+
+                                            <!-- Все категории из вашего списка -->
+                                            {% for category in categories %}
+                                                <option value="{{ category.pk }}"
+                                                        data-products="{{ category.products.count }}"
+                                                        {% if field.value.pk == category.pk %}selected{% endif %}>
+                                                    {{ category.name }}
+                                                    {% if category.products.exists %}( {{ category.products.count }} товаров ){% endif %}
+                                                </option>
+                                            {% empty %}
+                                                <option disabled>Категории отсутствуют</option>
+                                            {% endfor %}
+                                        </select>
+
+                                        <div class="category-info mt-1"></div>
+                                    </div>
+
+                                    <!-- Информация о выбранной категории -->
+                                    <div class="category-preview mt-2 p-1 bg-light rounded-3" style="display: none;">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary-subtle rounded-circle p-2 me-3">
+                                                <i class="bi bi-folder2 text-primary fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1 fw-semibold" id="selected-category-name"></h6>
+                                                <small class="text-muted" id="selected-category-products"></small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                <!-- Checkbox -->
+                                {% elif field.field.widget.input_type == 'checkbox' %}
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox"
+                                               name="{{ field.name }}"
+                                               id="{{ field.id_for_label }}"
+                                               class="form-check-input"
+                                               {% if field.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ field.id_for_label }}">
+                                            {{ field.help_text|default:"" }}
+                                        </label>
+                                    </div>
+
+                                <!-- Обычные поля -->
+                                {% else %}
+                                    <input type="{{ field.field.widget.input_type|default:'text' }}"
+                                           name="{{ field.name }}"
+                                           id="{{ field.id_for_label }}"
+                                           class="form-control form-control-lg"
+                                           value="{{ field.value|default:'' }}"
+                                           {% if field.field.required %}required{% endif %}
+                                           placeholder="{{ field.field.widget.attrs.placeholder|default:'' }}">
+                                {% endif %}
+
+                                {% if field.help_text and field.name != 'category' %}
+                                    <div class="form-text text-muted mt-1">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        {{ field.help_text }}
+                                    </div>
+                                {% endif %}
+
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-x-circle me-1"></i>
+                                        {{ field.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Кнопки действий -->
+                        <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                            <a href="{% url 'catalog:products_list' %}" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-arrow-left me-2"></i>Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-{% if object.pk %}check-lg{% else %}plus-lg{% endif %} me-2"></i>
+                                {% if object.pk %}
+                                    Сохранить изменения
+                                {% else %}
+                                    Добавить товар
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Подсказка -->
+            <div class="mt-4 text-center text-muted small">
+                <i class="bi bi-info-circle me-1"></i>
+                Поля, отмеченные звездочкой (<span class="text-danger">*</span>), обязательны для заполнения
+            </div>
+        </div>
     </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #6c63ff;
+        box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+    }
+
+    .form-control-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+
+    /* Стили для выпадающего списка категорий */
+    .select-wrapper {
+        position: relative;
+    }
+
+    .category-select {
+        appearance: none;
+        background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") no-repeat right 0.75rem center/1.125rem 1.125rem;
+        padding: 0.75rem 2.5rem 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: white;
+    }
+
+    .category-select:focus {
+        border-color: #6c63ff;
+        box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+        outline: none;
+    }
+
+    .category-select:hover:not(:disabled) {
+        border-color: #6c63ff;
+        background-color: #f8fafc;
+    }
+
+    .category-select option {
+        padding: 0.75rem;
+        font-weight: 500;
+    }
+
+    .category-preview {
+        border-left: 4px solid #6c63ff;
+        transition: all 0.3s ease;
+    }
+
+    .form-check-input:checked {
+        background-color: #6c63ff;
+        border-color: #6c63ff;
+    }
+
+    .card { border-radius: 1rem; }
+    .card:hover { transform: translateY(-2px); }
+    .btn-primary {
+        background: linear-gradient(135deg, #6c63ff 0%, #4a43d6 100%);
+        border: none;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.querySelector('.category-select');
+    const categoryPreview = document.querySelector('.category-preview');
+    const categoryName = document.getElementById('selected-category-name');
+    const categoryProducts = document.getElementById('selected-category-products');
+
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const productsCount = selectedOption.dataset.products || 0;
+            const categoryNameText = selectedOption.textContent.trim();
+
+            if (this.value) {
+                categoryName.textContent = categoryNameText.split('(')[0].trim();
+                categoryProducts.textContent = `Содержит ${productsCount} товаров`;
+                categoryPreview.style.display = 'block';
+                categoryPreview.style.opacity = '1';
+                categoryPreview.style.transform = 'translateX(0)';
+            } else {
+                categoryPreview.style.display = 'none';
+            }
+        });
+
+        // Проверяем выбранное значение при загрузке
+        if (categorySelect.value) {
+            categorySelect.dispatchEvent(new Event('change'));
+        }
+    }
+
+    // Остальная логика валидации...
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        if (input.type === 'hidden' || input.type === 'submit') return;
+
+        if (input.type === 'checkbox') {
+            input.classList.add('form-check-input');
+        } else if (input.tagName !== 'SELECT' || !input.classList.contains('category-select')) {
+            input.classList.add('form-control', 'form-control-lg');
+        }
+
+        input.addEventListener('blur', function() {
+            if (this.hasAttribute('required') && !this.value.trim()) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
